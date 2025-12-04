@@ -37,7 +37,6 @@ Shwary sends asynchronous updates to the callback URL specified above. The backe
 1. Accepts the JSON payload (no authentication headers are required by Shwary).
 2. Locates the matching order using either `metadata.orderId` or `transactionId`.
 3. Maps Shwary’s status (`PENDING`, `COMPLETED`, `FAILED`) to the internal order status (`pending`, `completed`, `cancelled`).
-4. Updates the Convex order record via `api.orders.updateOrderStatus`.
 
 Expected callback states:
 

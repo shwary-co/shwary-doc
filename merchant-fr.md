@@ -37,7 +37,6 @@ Shwary envoie des mises à jour asynchrones vers l’URL de rappel fournie. Le b
 1. Accepte la charge utile JSON (aucun en-tête d’authentification requis).
 2. Retrouve la commande via `metadata.orderId` ou `transactionId`.
 3. Mappe le statut Shwary (`PENDING`, `COMPLETED`, `FAILED`) vers le statut interne (`pending`, `completed`, `cancelled`).
-4. Met à jour la commande Convex avec `api.orders.updateOrderStatus`.
 
 États attendus :
 
