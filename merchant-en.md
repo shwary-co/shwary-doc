@@ -1,56 +1,56 @@
-# Intégration du point d’accès marchand Shwary
+# Shwary Merchant Endpoint Integration
 
-Cette note se concentre uniquement sur l’API marchand Shwary.
+This note is intentionally scoped to the Shwary merchant API.
 
-## Création de la clé marchande
+## How to create marchant Key
 
-1. Créez un compte sur app.shwary.com.
-2. Rendez-vous dans les paramètres.
-3. Générez une clé marchande.
-4. Copiez immédiatement la clé marchande et l’identifiant marchand.
+1. Create an account at app.shwary.com
+2. Navigate to the settings
+3. Create merchant key
+4. Copy the merchant Key and Merchant ID
 
-**Important** : la clé n’est affichée qu’une seule fois. Une fois la fenêtre fermée, elle ne peut plus être révélée. Assurez-vous de la sauvegarder.
+NOTE: The merchant key is only visible once, once closed cannot be revealed anymore, you need to make sure to copy it somewhere.
 
-## Vue d’ensemble
+## Merchant Overview
 
-- **Fournisseur** : Shwary (`https://api.shwary.com/`)
-- **But** : initier des paiements Mobile Money pour les portefeuilles **RDC**, **Kenya** et **Ouganda**.
-- **Endpoint marchand** : `POST https://api.shwary.com/api/v1/merchants/payment/shwary/{countryCode}`
-- **En-têtes nécessaires** :
+- **Provider**: Shwary (`https://api.shwary.com/`)
+- **Purpose**: Initiate mobile money payments for wallets in **DRC**, **Kenya**, and **Uganda**.
+- **Merchant endpoint**: `POST https://api.shwary.com/api/v1/merchants/payment/shwary/{countryCode}`
+- **Headers required**:
   - `x-merchant-key`
   - `x-merchant-id`
-- **Montant minimum** : strictement supérieur à `2 900` (arrondi côté backend).
+- **Minimum amount**: strictly greater than `2 900` (the backend rounds to whole integers).
 
-## Variables d’environnement
+## Environment Variables
 
 ```env
-SHWARY_MERCHANT_KEY=cle-marchande-shwary
-SHWARY_MERCHANT_ID=id-marchand-shwary
+SHWARY_MERCHANT_KEY=your-shwary-merchant-key
+SHWARY_MERCHANT_ID=your-shwary-merchant-id
 ```
 
-Ces variables sont utilisées par `app/api/shwary/route.ts` lors des appels proxy vers Shwary.
+These values are read by `app/api/shwary/route.ts` when we proxy calls to Shwary.
 
-## Endpoint de callback (`POST /api/shwary/callback`)
+## Callback Endpoint (`POST /api/shwary/callback`)
 
-Shwary envoie des mises à jour asynchrones vers l’URL de rappel fournie. Le backend :
+Shwary sends asynchronous updates to the callback URL specified above. The backend:
 
-1. Accepte la charge utile JSON (aucun en-tête d’authentification requis).
-2. Retrouve la commande via `metadata.orderId` ou `transactionId`.
-3. Mappe le statut Shwary (`PENDING`, `COMPLETED`, `FAILED`) vers le statut interne (`pending`, `completed`, `cancelled`).
-4. Met à jour la commande Convex avec `api.orders.updateOrderStatus`.
+1. Accepts the JSON payload (no authentication headers are required by Shwary).
+2. Locates the matching order using either `metadata.orderId` or `transactionId`.
+3. Maps Shwary’s status (`PENDING`, `COMPLETED`, `FAILED`) to the internal order status (`pending`, `completed`, `cancelled`).
+4. Updates the Convex order record via `api.orders.updateOrderStatus`.
 
-États attendus :
+Expected callback states:
 
-- **Pending** : l’utilisateur doit encore confirmer sur son téléphone.
-- **Completed** : le client a saisi son PIN et les fonds sont libérés.
-- **Failed** : le client a rejeté, le push a expiré ou Shwary a refusé.
+- **Pending**: initial push request (user still needs to confirm on their phone).
+- **Completed**: customer entered their PIN and funds cleared.
+- **Failed**: customer rejected the prompt, the push timed out, or Shwary rejected it.
 
-Le service répond toujours `200` + CORS pour confirmer la réception.
+We always respond with `200` + CORS headers so Shwary treats the callback as delivered.
 
-## Récapitulatif des validations
+## Validation Summary
 
-1. Le montant doit être numérique et `> 2900`.
-2. Le numéro de téléphone est obligatoire.
-3. `countryCode` doit être `DRC`, `KE` ou `UG`.
-4. `metadata`, si présent, doit être un objet JSON.
-5. Les en-têtes marchands (`SHWARY_MERCHANT_KEY`, `SHWARY_MERCHANT_ID`) sont obligatoires ; s’ils manquent, l’appel est refusé (401/500 selon la configuration).
+1. Amount must be numeric and `> 2900`.
+2. Phone number must be provided.
+3. `countryCode` limited to `DRC`, `KE`, `UG`.
+4. Metadata (if present) must be a JSON object.
+5. Merchant headers (`SHWARY_MERCHANT_KEY`, `SHWARY_MERCHANT_ID`) are mandatory; missing values result in `401`.
