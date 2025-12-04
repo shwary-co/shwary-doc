@@ -49,7 +49,7 @@ Le service répond toujours `200` + CORS pour confirmer la réception.
 
 ## Récapitulatif des validations
 
-1. Le montant doit être numérique et `> 2900`.
+1. Le montant doit être numérique et ` 2900` ou plus.
 2. Le numéro de téléphone est obligatoire.
 3. `countryCode` doit être `DRC`, `KE` ou `UG`.
 4. `metadata`, si présent, doit être un objet JSON.
