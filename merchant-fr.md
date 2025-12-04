@@ -28,7 +28,21 @@ SHWARY_MERCHANT_KEY=cle-marchande-shwary
 SHWARY_MERCHANT_ID=id-marchand-shwary
 ```
 
-Ces variables sont utilisées par `app/api/shwary/route.ts` lors des appels proxy vers Shwary.
+## Exemple de requête (cURL)
+
+L’extrait ci-dessous déclenche un paiement en CDF pour un portefeuille en RDC. Remplacez `DRC` par `KE` ou `UG`, et ajustez le montant/la devise pour correspondre au marché ciblé.
+
+```bash
+curl -X POST "https://api.shwary.com/api/v1/merchants/payment/DRC" \
+  -H "Content-Type: application/json" \
+  -H "x-merchant-key: $SHWARY_MERCHANT_KEY" \
+  -H "x-merchant-id: $SHWARY_MERCHANT_ID" \
+  -d '{
+    "amount": 5000,
+    "clientPhoneNumber": "+243820000000",
+    "callbackUrl": "https://your-app.com/api/shwary/callback"
+  }'
+```
 
 ## Endpoint de callback (`POST /api/shwary/callback`)
 

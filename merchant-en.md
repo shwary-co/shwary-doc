@@ -30,6 +30,22 @@ SHWARY_MERCHANT_ID=your-shwary-merchant-id
 
 These values are read by `app/api/shwary/route.ts` when we proxy calls to Shwary.
 
+## Example request (cURL)
+
+The snippet below triggers a CDF payment for a DRC wallet. Swap `DRC` with `KE` or `UG`, and adjust amount/currency to match the target market.
+
+```bash
+curl -X POST "https://api.shwary.com/api/v1/merchants/payment/DRC" \
+  -H "Content-Type: application/json" \
+  -H "x-merchant-key: $SHWARY_MERCHANT_KEY" \
+  -H "x-merchant-id: $SHWARY_MERCHANT_ID" \
+  -d '{
+    "amount": 5000,
+    "clientPhoneNumber": "+243820000000",
+    "callbackUrl": "https://your-app.com/api/shwary/callback"
+  }'
+```
+
 ## Callback Endpoint (`POST /api/shwary/callback`)
 
 Shwary sends asynchronous updates to the callback URL specified above. The backend:
