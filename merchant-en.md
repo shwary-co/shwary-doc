@@ -49,7 +49,7 @@ We always respond with `200` + CORS headers so Shwary treats the callback as del
 
 ## Validation Summary
 
-1. Amount must be numeric and `> 2900`.
+1. Amount must be numeric and `2900 CDF` for DRC, `3500 UGX` for Uganda and `130 KES` for Kenya.
 2. Phone number must be provided.
 3. `countryCode` limited to `DRC`, `KE`, `UG`.
 4. Metadata (if present) must be a JSON object.
