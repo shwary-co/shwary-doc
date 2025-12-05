@@ -15,7 +15,7 @@ Cette note se concentre uniquement sur l’API marchand Shwary.
 
 - **Fournisseur** : Shwary (`https://api.shwary.com/`)
 - **But** : initier des paiements Mobile Money pour les portefeuilles **RDC**, **Kenya** et **Ouganda**.
-- **Endpoint marchand** : `POST https://api.shwary.com/api/v1/merchants/payment/shwary/{countryCode}`
+- **Endpoint marchand** : `POST https://api.shwary.com/api/v1/merchants/payment/{countryCode}`
 - **En-têtes nécessaires** :
   - `x-merchant-key`
   - `x-merchant-id`
