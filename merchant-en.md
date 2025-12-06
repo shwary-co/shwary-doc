@@ -16,19 +16,168 @@ NOTE: The merchant key is only visible once, once closed cannot be revealed anym
 - **Provider**: Shwary (`https://api.shwary.com/`)
 - **Purpose**: Initiate mobile money payments for wallets in **DRC**, **Kenya**, and **Uganda**.
 - **Merchant endpoint**: `POST https://api.shwary.com/api/v1/merchants/payment/{countryCode}`
-- **Headers required**:
-  - `x-merchant-key`
-  - `x-merchant-id`
 - **Minimum amount**: strictly greater than `2 900` (the backend rounds to whole integers).
 
-## Environment Variables
+## Authentication & Headers
 
-```env
-SHWARY_MERCHANT_KEY=your-shwary-merchant-key
-SHWARY_MERCHANT_ID=your-shwary-merchant-id
+Every merchant endpoint is protected by `MerchantGuard`. Requests must include:
+
+| Header           | Description                                    |
+| ---------------- | ---------------------------------------------- |
+| `x-merchant-id`  | The merchant's UUID                            |
+| `x-merchant-key` | Shared secret generated via `POST /merchants`. |
+
+Invalid/missing keys result in `401 Unauthorized`.
+
+## Supported Countries
+
+Use the `countryCode` path parameter to target the right rails.
+
+| Country Code | Country                      | Phone Code | Currency |
+| ------------ | ---------------------------- | ---------- | -------- |
+| `DRC`        | Democratic Republic of Congo | `+243`     | `CDF`    |
+| `KE`         | Kenya                        | `+254`     | `KES`    |
+| `UG`         | Uganda                       | `+256`     | `UGX`    |
+
+`clientPhoneNumber` must start with the country’s phone code.
+
+## Shared Request Body
+
+```jsonc
+{
+  "amount": 5000,
+  "clientPhoneNumber": "+243812345678",
+  "callbackUrl": "https://merchant.example.com/hooks/shwary" // optional
+}
 ```
 
-These values are read by `app/api/shwary/route.ts` when we proxy calls to Shwary.
+| Field               | Required | Description                                                             |
+| ------------------- | -------- | ----------------------------------------------------------------------- |
+| `amount`            | ✔        | Amount in the target country’s currency. Must be > 0 (>= 2900 for DRC). |
+| `clientPhoneNumber` | ✔        | MSISDN in E.164 format with country code.                               |
+| `callbackUrl`       | ✖        | HTTPS endpoint that receives async transaction updates.                 |
+
+## Response Shape
+
+All endpoints return a `TransactionResponseDto`:
+
+```json
+{
+  "id": "c0fdfe50-24be-4de1-9f66-84608fd45a5f",
+  "userId": "merchant-uuid",
+  "amount": 5000,
+  "currency": "CDF",
+  "type": "deposit",
+  "status": "pending",
+  "recipientPhoneNumber": "+243812345678",
+  "referenceId": "merchant-6c661f48-0c39-4474-9621-931d4419babb",
+  "metadata": null,
+  "failureReason": null,
+  "completedAt": null,
+  "createdAt": "2025-01-16T10:15:00.000Z",
+  "updatedAt": "2025-01-16T10:15:00.000Z",
+  "isSandbox": false
+}
+```
+
+- `status` starts as `pending` for real-money flows and `completed` for sandbox.
+- `isSandbox` lets you distinguish simulated transactions across the stack.
+
+## Callback Contract
+
+If `callbackUrl` is provided, Shwary performs a POST with the transaction payload whenever the status changes (e.g., from `pending` → `completed` or `failed`). Expect the same JSON as the response body plus contextual fields such as `error` when failures happen.
+
+Retries are **not** automatic today; ensure your endpoint is highly available and idempotent.
+
+## Endpoints
+
+### 1. Standard Merchant Payment
+
+`POST /merchants/payment/:countryCode`
+
+Performs a payment using the customer’s mobile-money account and settles into the merchant’s Shwary wallet.
+
+- **Status Flow**: `pending` → `completed` (after Pretium callback) or `failed`.
+
+**Sample Request**
+
+```http
+POST /merchants/payment/DRC HTTP/1.1
+Host: api.shwary.com
+x-merchant-id: f5a9f5db-1b33-4d76-9168-0035a6f71170
+x-merchant-key: shwary_live_merchant_secret
+Content-Type: application/json
+
+{
+  "amount": 5000,
+  "clientPhoneNumber": "+243812345678",
+  "callbackUrl": "https://merchant.example.com/hooks/shwary"
+}
+```
+
+**Typical Response**
+
+```json
+{
+  "id": "e44b497a-d2d3-4b82-aad5-0bddb674ba69",
+  "status": "pending",
+  "currency": "CDF",
+  "pretium_transaction_id": "PRT-123456",
+  "isSandbox": false,
+  "...": "..."
+}
+```
+
+### 2. Sandbox Merchant Payment
+
+`POST /merchants/payment/sandbox/:countryCode`
+
+Designed for integration tests and UAT. No blockchain or mobile-money calls occur; a completed transaction row is created with `is_sandbox = true`.
+
+- **Status Flow**: `completed` instantly (or `failed` if validation fails).
+- **Callback**: Still fires so you can test webhook handling.
+
+**Sample Response**
+
+```json
+{
+  "id": "6a6bb0e6-7400-4bd9-9b1e-5b518c352da9",
+  "status": "completed",
+  "currency": "CDF",
+  "referenceId": "merchant-sandbox-5f6b8f7a-4430-4e2a-ab46-0b3bf63503d4",
+  "metadata": {
+    "sandboxClientId": "client-uuid",
+    "countryCode": "DRC"
+  },
+  "isSandbox": true,
+  "...": "..."
+}
+```
+
+Use sandbox to validate:
+
+1. Header signing and authentication.
+2. Payload validation errors (amount rules, phone formats, etc.).
+3. Callback endpoint behavior.
+
+## Error Handling
+
+| Status             | Meaning                                                   | Example                                                 |
+| ------------------ | --------------------------------------------------------- | ------------------------------------------------------- |
+| `400 Bad Request`  | Validation failures (amount, phone, unsupported country). | `{ "message": "Amount must be greater than 2900 CDF" }` |
+| `401 Unauthorized` | Missing/invalid merchant headers.                         | `{ "message": "Invalid merchant key" }`                 |
+| `404 Not Found`    | Client or merchant not registered in Shwary.              | `{ "message": "Client not found" }`                     |
+| `502 Bad Gateway`  | Pretium on-ramp failure propagating back to the merchant. |
+
+Always inspect `failureReason` (and `error` field in callbacks) to diagnose issues.
+
+## Integration Checklist
+
+1. Call the sandbox endpoint to validate auth, payloads, and callback handling.
+2. Listen for webhook updates and reconcile using `transactionId`.
+3. Launch with the standard or Shwary endpoint once you’re confident.
+
+Need help? Share request IDs timestamps when contacting Shwary support. This speeds up log correlation on our side.
 
 ## Example request (cURL)
 
@@ -45,27 +194,3 @@ curl -X POST "https://api.shwary.com/api/v1/merchants/payment/DRC" \
     "callbackUrl": "https://your-app.com/api/shwary/callback"
   }'
 ```
-
-## Callback Endpoint (`POST /api/shwary/callback`)
-
-Shwary sends asynchronous updates to the callback URL specified above. The backend:
-
-1. Accepts the JSON payload (no authentication headers are required by Shwary).
-2. Locates the matching order using either `metadata.orderId` or `transactionId`.
-3. Maps Shwary’s status (`PENDING`, `COMPLETED`, `FAILED`) to the internal order status (`pending`, `completed`, `cancelled`).
-
-Expected callback states:
-
-- **Pending**: initial push request (user still needs to confirm on their phone).
-- **Completed**: customer entered their PIN and funds cleared.
-- **Failed**: customer rejected the prompt, the push timed out, or Shwary rejected it.
-
-We always respond with `200` + CORS headers so Shwary treats the callback as delivered.
-
-## Validation Summary
-
-1. Amount must be numeric and `2900 CDF` for DRC, `3500 UGX` for Uganda and `130 KES` for Kenya.
-2. Phone number must be provided.
-3. `countryCode` limited to `DRC`, `KE`, `UG`.
-4. Metadata (if present) must be a JSON object.
-5. Merchant headers (`SHWARY_MERCHANT_KEY`, `SHWARY_MERCHANT_ID`) are mandatory; missing values result in `401`.
