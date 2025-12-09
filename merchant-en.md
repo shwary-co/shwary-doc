@@ -145,10 +145,6 @@ Designed for integration tests and UAT. No blockchain or mobile-money calls occu
   "status": "completed",
   "currency": "CDF",
   "referenceId": "merchant-sandbox-5f6b8f7a-4430-4e2a-ab46-0b3bf63503d4",
-  "metadata": {
-    "sandboxClientId": "client-uuid",
-    "countryCode": "DRC"
-  },
   "isSandbox": true,
   "...": "..."
 }
