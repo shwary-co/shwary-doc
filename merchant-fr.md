@@ -165,12 +165,12 @@ Utilisez le sandbox pour valider :
 
 ## Gestion des erreurs
 
-| Statut             | Signification                                 | Exemple                                                 |
-| ------------------ | --------------------------------------------- | ------------------------------------------------------- |
-| `400 Bad Request`  | Erreur de validation (montant, pays, numéro). | `{ "message": "Amount must be greater than 2900 CDF" }` |
-| `401 Unauthorized` | En-têtes marchands manquants/invalides.       | `{ "message": "Invalid merchant key" }`                 |
-| `404 Not Found`    | Client ou marchand absent de Shwary.          | `{ "message": "Client not found" }`                     |
-| `502 Bad Gateway`  | Échec renvoyé par Pretium vers le marchand.   |                                                         |
+| Statut             | Signification                                  | Exemple                                                 |
+| ------------------ | ---------------------------------------------- | ------------------------------------------------------- |
+| `400 Bad Request`  | Erreur de validation (montant, pays, numéro).  | `{ "message": "Amount must be greater than 2900 CDF" }` |
+| `401 Unauthorized` | En-têtes marchands manquants/invalides.        | `{ "message": "Invalid merchant key" }`                 |
+| `404 Not Found`    | Client ou marchand absent de Shwary.           | `{ "message": "Client not found" }`                     |
+| `502 Bad Gateway`  | Échec renvoyé par le gateway vers le marchand. |                                                         |
 
 Vérifiez toujours `failureReason` (et `error` dans les callbacks) pour diagnostiquer.
 

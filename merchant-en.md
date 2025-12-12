@@ -163,7 +163,7 @@ Use sandbox to validate:
 | `400 Bad Request`  | Validation failures (amount, phone, unsupported country). | `{ "message": "Amount must be greater than 2900 CDF" }` |
 | `401 Unauthorized` | Missing/invalid merchant headers.                         | `{ "message": "Invalid merchant key" }`                 |
 | `404 Not Found`    | Client or merchant not registered in Shwary.              | `{ "message": "Client not found" }`                     |
-| `502 Bad Gateway`  | Pretium on-ramp failure propagating back to the merchant. |
+| `502 Bad Gateway`  | Gateway failure propagating back to the merchant.         |
 
 Always inspect `failureReason` (and `error` field in callbacks) to diagnose issues.
 
