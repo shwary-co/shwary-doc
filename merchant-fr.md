@@ -163,6 +163,48 @@ Utilisez le sandbox pour valider :
 2. Les règles de validation (montants, format des numéros, etc.).
 3. Le comportement de votre endpoint de callback.
 
+### 3. Récupérer une transaction marchande par ID
+
+`GET /merchants/transactions/{id}`
+
+Retourne une transaction unique à partir de son ID.
+
+**Paramètres de chemin**
+
+| Nom | Type   | Obligatoire | Description            |
+| --- | ------ | ----------- | ---------------------- |
+| `id` | string | ✔           | UUID de la transaction |
+
+**Exemple de requête**
+
+```http
+GET /merchants/transactions/c0fdfe50-24be-4de1-9f66-84608fd45a5f HTTP/1.1
+Host: api.shwary.com
+x-merchant-id: f5a9f5db-1b33-4d76-9168-0035a6f71170
+x-merchant-key: shwary_live_merchant_secret
+```
+
+**Réponse typique (200)**
+
+```json
+{
+  "id": "c0fdfe50-24be-4de1-9f66-84608fd45a5f",
+  "userId": "merchant-uuid",
+  "amount": 5000,
+  "currency": "CDF",
+  "type": "deposit",
+  "status": "pending",
+  "recipientPhoneNumber": "+243812345678",
+  "referenceId": "merchant-6c661f48-0c39-4474-9621-931d4419babb",
+  "metadata": null,
+  "failureReason": null,
+  "completedAt": null,
+  "createdAt": "2025-01-16T10:15:00.000Z",
+  "updatedAt": "2025-01-16T10:15:00.000Z",
+  "isSandbox": false
+}
+```
+
 ## Gestion des erreurs
 
 | Statut             | Signification                                  | Exemple                                                 |
