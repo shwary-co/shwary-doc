@@ -16,7 +16,7 @@ Cette note se concentre uniquement sur l’API marchand Shwary.
 - **Fournisseur** : Shwary (`https://api.shwary.com/`)
 - **But** : initier des paiements Mobile Money pour les portefeuilles **RDC**, **Kenya** et **Ouganda**.
 - **Endpoint marchand** : `POST https://api.shwary.com/api/v1/merchants/payment/{countryCode}`
-  x- **Montant minimum** : strictement supérieur à `2 900` (arrondi côté backend).
+  x- **Montant minimum** :  `100` (arrondi côté backend).
 
 ## Vue d’ensemble
 
@@ -169,7 +169,7 @@ Utilisez le sandbox pour valider :
 
 Retourne une transaction unique à partir de son ID.
 
-**Paramètres de chemin**
+**Paramètres**
 
 | Nom | Type   | Obligatoire | Description            |
 | --- | ------ | ----------- | ---------------------- |
@@ -194,7 +194,7 @@ x-merchant-key: shwary_live_merchant_secret
   "currency": "CDF",
   "type": "deposit",
   "status": "pending",
-  "recipientPhoneNumber": "+243812345678",
+  "recipientPhoneNumber": "+243972345678",
   "referenceId": "merchant-6c661f48-0c39-4474-9621-931d4419babb",
   "metadata": null,
   "failureReason": null,

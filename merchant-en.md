@@ -16,7 +16,7 @@ NOTE: The merchant key is only visible once, once closed cannot be revealed anym
 - **Provider**: Shwary (`https://api.shwary.com/`)
 - **Purpose**: Initiate mobile money payments for wallets in **DRC**, **Kenya**, and **Uganda**.
 - **Merchant endpoint**: `POST https://api.shwary.com/api/v1/merchants/payment/{countryCode}`
-- **Minimum amount**: strictly greater than `2 900` (the backend rounds to whole integers).
+- **Minimum amount**: `100` (the backend rounds to whole integers).
 
 ## Authentication & Headers
 
