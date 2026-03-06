@@ -33,11 +33,11 @@ Invalid/missing keys result in `401 Unauthorized`.
 
 Use the `countryCode` path parameter to target the right rails.
 
-| Country Code | Country                      | Phone Code | Currency |
-| ------------ | ---------------------------- | ---------- | -------- |
-| `DRC`        | Democratic Republic of Congo | `+243`     | `CDF`    |
-| `KE`         | Kenya                        | `+254`     | `KES`    |
-| `UG`         | Uganda                       | `+256`     | `UGX`    |
+| Country Code | Country                      | Phone Code | Currency  |
+| ------------ | ---------------------------- | ---------- |-----------|
+| `DRC`        | Democratic Republic of Congo | `+243`     | `CDF/USD` |
+| `KE`         | Kenya                        | `+254`     | `KES`     |
+| `UG`         | Uganda                       | `+256`     | `UGX`     |
 
 `clientPhoneNumber` must start with the country’s phone code.
 

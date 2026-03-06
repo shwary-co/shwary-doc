@@ -40,11 +40,11 @@ Des clés manquantes ou invalides retournent `401 Unauthorized`.
 
 Utilisez le paramètre de chemin `countryCode` pour cibler les bons rails.
 
-| Code  | Pays                             | Indicatif | Devise |
-| ----- | -------------------------------- | --------- | ------ |
-| `DRC` | République Démocratique du Congo | `+243`    | `CDF`  |
-| `KE`  | Kenya                            | `+254`    | `KES`  |
-| `UG`  | Ouganda                          | `+256`    | `UGX`  |
+| Code  | Pays                             | Indicatif | Devise    |
+| ----- | -------------------------------- | --------- |-----------|
+| `DRC` | République Démocratique du Congo | `+243`    | `CDF/USD` |
+| `KE`  | Kenya                            | `+254`    | `KES`     |
+| `UG`  | Ouganda                          | `+256`    | `UGX`     |
 
 `clientPhoneNumber` doit commencer par l’indicatif du pays.
 
