@@ -42,7 +42,7 @@ Utilisez le paramètre de chemin `countryCode` pour cibler les bons rails.
 
 | Code  | Pays                             | Indicatif | Devise    |
 | ----- | -------------------------------- | --------- |-----------|
-| `DRC` | République Démocratique du Congo | `+243`    | `CDF/USD` |
+| `DRC` | République Démocratique du Congo | `+243`    | `CDF` |
 | `KE`  | Kenya                            | `+254`    | `KES`     |
 | `UG`  | Ouganda                          | `+256`    | `UGX`     |
 
