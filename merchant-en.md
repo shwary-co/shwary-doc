@@ -35,7 +35,7 @@ Use the `countryCode` path parameter to target the right rails.
 
 | Country Code | Country                      | Phone Code | Currency  |
 | ------------ | ---------------------------- | ---------- |-----------|
-| `DRC`        | Democratic Republic of Congo | `+243`     | `CDF/USD` |
+| `DRC`        | Democratic Republic of Congo | `+243`     | `CDF` |
 | `KE`         | Kenya                        | `+254`     | `KES`     |
 | `UG`         | Uganda                       | `+256`     | `UGX`     |
 
