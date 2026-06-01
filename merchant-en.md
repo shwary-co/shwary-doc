@@ -35,9 +35,7 @@ Use the `countryCode` path parameter to target the right rails.
 
 | Country Code | Country                      | Phone Code | Currency  |
 | ------------ | ---------------------------- | ---------- |-----------|
-| `DRC`        | Democratic Republic of Congo | `+243`     | `CDF` |
-| `KE`         | Kenya                        | `+254`     | `KES`     |
-| `UG`         | Uganda                       | `+256`     | `UGX`     |
+| `DRC`        | Democratic Republic of Congo | `+243`     | `CDF/USD` |
 
 `clientPhoneNumber` must start with the country's phone code.
 
@@ -250,7 +248,6 @@ x-merchant-key: shwary_live_merchant_secret
   "referenceId": "merchant-6c661f48-0c39-4474-9621-931d4419babb",
   "metadata": null,
   "failureReason": null,
-  "txHash": null,
   "completedAt": null,
   "createdAt": "2025-01-16T10:15:00.000Z",
   "updatedAt": "2025-01-16T10:15:00.000Z",
